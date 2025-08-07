@@ -294,3 +294,39 @@ exports.getNoticeJson = (req, res) => {
         });
     });
 };
+
+// 담당자 지정
+// POST /api/notices/:id/assign
+exports.assignNoticeToPerson = (req, res) => {
+    const noticeId = req.params.id;
+    const { department_id, assigned_to } = req.body;
+
+    if (!department_id || !assigned_to) {
+        return res.status(400).json({ error: "Missing department_id or assigned_to" });
+    }
+
+    const query = `
+        UPDATE notice_status
+        SET assigned_to = ?
+        WHERE notice_id = ? AND department_id = ?
+    `;
+
+    db.run(query, [assigned_to, noticeId, department_id], function (err) {
+        if (err) {
+            console.error("DB error:", err.message);
+            return res.status(500).json({ error: "Database error" });
+        }
+
+        // if no row updated, return 404
+        if (this.changes === 0) {
+            return res.status(404).json({ error: "Notice status not found for this department" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            notice_id: Number(noticeId),
+            department_id,
+            assigned_to
+        });
+    });
+};

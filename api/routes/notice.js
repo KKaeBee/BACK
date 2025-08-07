@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getNoticesByDepartment, toggleStar, markAsRead, getNoticeById, getSortedNotices, searchNotices, getNoticeJson} = require("../controllers/notice");
+const { getNoticesByDepartment, toggleStar, markAsRead, getNoticeById, getSortedNotices, searchNotices, getNoticeJson, assignNoticeToPerson} = require("../controllers/notice");
 
 // 제목 기준 검색
 // GET /api/notices/search?department_id=10&keyword=보험업감독업무&scope=inbox
@@ -25,6 +25,10 @@ router.get('/:notice_id', getNoticeById);
 // 메일 상세 내용 조회 (부서/요약/체크리스트)
 // GET /api/notices/:id/json
 router.get("/:id/json", getNoticeJson);
+
+// 담당자 지정
+// POST /api/notices/:id/assign
+router.post("/:id/assign", assignNoticeToPerson);
 
 // 부서별 메일 목록 조회
 // GET /api/notices?department_id=10
